@@ -2,12 +2,11 @@ import logging
 from pymongo import MongoClient
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
-    ApplicationBuilder,
+    Updater,
     CommandHandler,
-    ContextTypes,
     CallbackQueryHandler,
     MessageHandler,
-    filters,
+    Filters,
 )
 
 # --- CONFIGURATION ---
@@ -321,7 +320,8 @@ async def deduct_balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Use: /deduct ID AMOUNT")
 
 # --- RUN ---
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+updater = Updater(BOT_TOKEN, use_context=True)
+dp = updater.dispatcher
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("approve", approve_deposit))
@@ -333,3 +333,5 @@ app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
 print("Bot running...")
 app.run_polling()
+updater.start_polling()
+updater.idle()
